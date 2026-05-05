@@ -1,0 +1,94 @@
+{
+  "nav": {
+    "findFood": "Find Food",
+    "donateFood": "Donate Food",
+    "dashboard": "Dashboard",
+    "admin": "Admin Panel",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "badge": "🌱 Join the Zero Waste Movement",
+    "heroTitle": "Nourishing Communities,",
+    "heroHighlight": "One Meal at a Time.",
+    "heroSubtitle": "MealMitra connects surplus food from restaurants, events, and households with local receivers in real-time. Together, we can end hunger and waste.",
+    "becomeDonor": "Become a Donor",
+    "findFood": "Find Food Nearby",
+    "stats": {
+      "meals": "Meals Salvaged",
+      "donors": "Active Donors",
+      "co2": "CO2 Saved"
+    },
+    "features": {
+      "title": "Why Choose ",
+      "subtitle": "Our platform is designed for speed, transparency, and impact.",
+      "proximity": {
+        "title": "Intelligent Proximity",
+        "desc": "We only show food within a 20km radius to ensure freshness and reduce travel time."
+      },
+      "notifications": {
+        "title": "Instant Notifications",
+        "desc": "Recipients are notified the moment food is posted, minimizing wait times."
+      },
+      "security": {
+        "title": "Verified Security",
+        "desc": "Full tracking and identity verification for a safe, trusted community."
+      }
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome,",
+    "role": "Role",
+    "totalPosted": "Total Posted",
+    "totalReceived": "Total Received",
+    "pendingRequests": "Pending Requests",
+    "yourDonations": "Your Posted Donations",
+    "noDonations": "You haven't posted any food yet.",
+    "requestsReceived": "Requests Received",
+    "yourRequests": "Your Food Requests",
+    "noActivity": "No request activity yet.",
+    "postedOn": "Posted on",
+    "requestedOn": "Requested on"
+  },
+  "donations": {
+    "available": "Available Food",
+    "itemsFound": "items found nearby",
+    "loading": "Loading donations...",
+    "noDonations": "No donations available from other users.",
+    "posted": "Posted",
+    "expires": "Expires",
+    "request": "Request",
+    "messagePlaceholder": "Add a message...",
+    "foodType": "Food Type",
+    "quantity": "Quantity",
+    "description": "Description",
+    "imageUrl": "Food Picture URL",
+    "postButton": "Post Donation",
+    "posting": "Posting..."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue your impact",
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Login",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign up"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the community of food savers",
+      "name": "Full Name",
+      "email": "Email Address",
+      "role": "Join As",
+      "donor": "Food Donor",
+      "receiver": "Food Receiver",
+      "password": "Password",
+      "submit": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "login": "Login"
+    }
+  }
+}

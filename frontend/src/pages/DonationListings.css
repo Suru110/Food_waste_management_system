@@ -1,0 +1,169 @@
+.donation-listings-page {
+  display: flex;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  background: var(--dark-bg);
+}
+
+.sidebar-list {
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.02);
+  z-index: 10;
+}
+
+.listing-header {
+  padding: 2.5rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.title-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.listing-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+}
+
+.listing-header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.search-box .glass-input {
+  padding-left: 3.5rem;
+}
+
+.listing-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.donation-card {
+  cursor: pointer;
+  padding: 2rem;
+}
+
+.donation-card.active {
+  border-color: var(--primary);
+  background: rgba(0, 242, 145, 0.05);
+}
+
+.card-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--glass-border);
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.donation-card:hover .card-image img {
+  transform: scale(1.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.quantity-badge {
+  background: var(--primary);
+  color: #000;
+  padding: 0.2rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.distance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary.small {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.map-view {
+  flex: 1;
+  position: relative;
+  background: #1a1d23;
+  min-height: 400px;
+}
+
+.info-window {
+  color: #000;
+  padding: 0.5rem;
+}
+
+.padding {
+  padding: 1rem;
+}
+
+@media (max-width: 900px) {
+  .donation-listings-page {
+    flex-direction: column-reverse;
+  }
+  .sidebar {
+    width: 100%;
+    height: 50%;
+  }
+}

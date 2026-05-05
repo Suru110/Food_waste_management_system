@@ -1,0 +1,88 @@
+.post-donation {
+  padding: 4rem 0 6rem;
+  display: flex;
+  justify-content: center;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 800px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.primary-icon {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+}
+
+.form-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.form-header p {
+  color: var(--text-secondary);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.map-container {
+  overflow: hidden;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+}
+
+textarea.glass-input {
+  resize: vertical;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.search-results-dropdown {
+  background: var(--dark-bg) !important;
+  border: 1px solid var(--primary) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+.search-result-item {
+  transition: var(--transition);
+  color: var(--text-secondary);
+}
+
+.search-result-item:hover {
+  background: rgba(0, 242, 145, 0.1) !important;
+  color: var(--primary) !important;
+  padding-left: 1.2rem !important;
+}
