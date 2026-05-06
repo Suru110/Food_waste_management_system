@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 pydantic
+pydantic[email]
 pydantic-settings
 python-jose[cryptography]
 passlib[argon2]
