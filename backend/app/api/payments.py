@@ -6,8 +6,8 @@ import uuid
 
 router = APIRouter()
 
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_some_key_here")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "some_secret_here")
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_Sm7Z67uUnJKXDE")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "lEIIDHfvyvlVuJ7ZWpJzAPcc")
 
 try:
     client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
