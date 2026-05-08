@@ -26,6 +26,7 @@ class UserOut(UserBase):
     created_at: datetime
     donation_count: int = 0
     delivery_count: int = 0
+    total_monetary_donated: float = 0.0
 
     class Config:
         from_attributes = True

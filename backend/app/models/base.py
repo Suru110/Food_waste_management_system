@@ -37,6 +37,7 @@ class User(Base):
     role = Column(SQLEnum(UserRole), default=UserRole.INDIVIDUAL)
     current_lat = Column(Float, nullable=True)
     current_lng = Column(Float, nullable=True)
+    total_monetary_donated = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     donations = relationship("Donation", back_populates="donor")

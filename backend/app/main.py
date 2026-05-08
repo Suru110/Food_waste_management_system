@@ -1,5 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from .api import auth, donations, requests, users, deliveries, translation, payments
 from .db.session import engine
 from .models import base
@@ -30,3 +36,21 @@ app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Food Waste Management System API"}
+
+# Serve static files for frontend
+frontend_path = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
+
+    @app.exception_handler(404)
+    async def not_found_handler(request: Request, exc):
+        # Check if the request is for an API route
+        if request.url.path.startswith("/api"):
+            return {"detail": "Not Found"}
+        # For all other routes, serve index.html to support React Router
+        index_path = os.path.join(frontend_path, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        return {"detail": "Not Found"}
+else:
+    print(f"Frontend static path not found at {frontend_path}. Please build the frontend first.")

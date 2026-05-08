@@ -51,6 +51,7 @@ const Dashboard = () => {
   const [donorDeliveries, setDonorDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDonationPrompt, setShowDonationPrompt] = useState(false);
+  const [donationAmount, setDonationAmount] = useState(100);
   const [trackingRequest, setTrackingRequest] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -129,14 +130,14 @@ const Dashboard = () => {
   const handleMonetaryDonation = async () => {
     try {
       const token = localStorage.getItem('token');
-      // Create order for 100 INR (10000 paise)
+      // Create order for the selected amount
       const res = await axios.post(`${API_BASE_URL}/api/payments/create-order`, 
-        { amount: 10000, currency: "INR" },
+        { amount: donationAmount * 100, currency: "INR" }, // amount in paise
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
       const options = {
-          "key": "rzp_test_wQZ3QWwBw2WqW9", // Valid mock test key format
+          "key": import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_default",
           "amount": res.data.amount,
           "currency": res.data.currency,
           "name": "MealMitra Foundation",
@@ -144,13 +145,15 @@ const Dashboard = () => {
           "order_id": res.data.id,
           "handler": async function (response){
               try {
-                  await axios.post(`${API_BASE_URL}/api/payments/verify`, {
-                      razorpay_payment_id: response.razorpay_payment_id,
-                      razorpay_order_id: response.razorpay_order_id,
-                      razorpay_signature: response.razorpay_signature || "mock_signature"
-                  }, { headers: { Authorization: `Bearer ${token}` } });
+                   await axios.post(`${API_BASE_URL}/api/payments/verify`, {
+                       razorpay_payment_id: response.razorpay_payment_id,
+                       razorpay_order_id: response.razorpay_order_id,
+                       razorpay_signature: response.razorpay_signature || "mock_signature",
+                       amount: donationAmount
+                   }, { headers: { Authorization: `Bearer ${token}` } });
                   alert("Payment Successful! Transaction ID: " + response.razorpay_payment_id);
                   setShowDonationPrompt(false);
+                  refreshUser(); // Refresh user data to update badges and stats
               } catch (err) {
                   alert("Payment verification failed");
               }
@@ -165,7 +168,7 @@ const Dashboard = () => {
           }
       };
       
-      if (window.Razorpay && options.key !== "rzp_test_wQZ3QWwBw2WqW9") {
+      if (window.Razorpay && options.key !== "rzp_test_default") {
          const rzp1 = new window.Razorpay(options);
          rzp1.on('payment.failed', function (response){
                  alert("Payment Failed! Reason: " + response.error.description);
@@ -178,10 +181,12 @@ const Dashboard = () => {
              await axios.post(`${API_BASE_URL}/api/payments/verify`, {
                  razorpay_payment_id: "pay_mock_" + Math.floor(Math.random()*1000000),
                  razorpay_order_id: res.data.id,
-                 razorpay_signature: "mock_signature"
+                 razorpay_signature: "mock_signature",
+                 amount: donationAmount
              }, { headers: { Authorization: `Bearer ${token}` } });
              alert("Mock Payment Successful! Your payment has been simulated.");
              setShowDonationPrompt(false);
+             refreshUser(); // Refresh user data to update badges and stats
          } catch (err) {
              alert("Mock Payment verification failed");
          }
@@ -251,7 +256,7 @@ const Dashboard = () => {
               >
                 Edit Profile
               </button>
-              {user.role === 'individual' && user.donation_count > 0 && (
+               {user.role === 'individual' && user.donation_count > 0 && (
                 <div className="donor-badge" style={{ padding: '0.3rem 0.8rem' }}>
                    <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     {user.donation_count >= 201 ? "💎 Diamond Donor" : 
@@ -260,6 +265,16 @@ const Dashboard = () => {
                      user.donation_count >= 31 ? "🥈 Silver Donor" : 
                      user.donation_count >= 16 ? "🥉 Bronze Donor" : 
                      user.donation_count >= 6 ? "🌟 Star Donor" : "🎗️ Supporter"}
+                   </span>
+                </div>
+              )}
+              {user.role === 'individual' && user.total_monetary_donated > 0 && (
+                <div className="donor-badge" style={{ padding: '0.3rem 0.8rem', background: 'linear-gradient(45deg, #00f291, #00d4ff)', border: 'none', color: '#000' }}>
+                   <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    {user.total_monetary_donated >= 25000 ? "❤️ Community Helper" : 
+                     user.total_monetary_donated >= 10000 ? "💵 Giving Starter" : 
+                     user.total_monetary_donated >= 5000 ? "🤝 Hope Contributor" : 
+                     user.total_monetary_donated >= 1000 ? "🌟 Kind Donor" : "💚 First Supporter"}
                    </span>
                 </div>
               )}
@@ -286,6 +301,15 @@ const Dashboard = () => {
               <span>{user.role === 'individual' ? t('dashboard.totalPosted') : 'Total Deliveries'}</span>
             </div>
           </div>
+          {user.role === 'individual' && user.total_monetary_donated > 0 && (
+            <div className="quick-stat">
+              <Heart size={20} style={{ color: '#00f291' }} />
+              <div className="stat-value">
+                <strong>₹{user.total_monetary_donated}</strong>
+                <span>Total Donated</span>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -446,8 +470,33 @@ const Dashboard = () => {
             <div className="card donation-prompt" style={{ gridColumn: 'span 2', textAlign: 'center', background: 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--secondary-rgb), 0.1) 100%)', border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
               <Heart size={48} className="primary-icon" style={{ margin: '0 auto 1rem', display: 'block' }} />
               <h2 style={{ marginBottom: '0.5rem' }}>Support Our Mission</h2>
-              <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>You recently received food through our platform! If you are willing and able, please consider making a small monetary donation to help support our NGOs, riders, and platform operations.</p>
-              <button className="btn-primary" onClick={handleMonetaryDonation}>Donate Money Now</button>
+              <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>You recently received food through our platform! If you are willing and able, please consider making a small monetary donation to help support our NGOs, riders, and platform operations.</p>
+              
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                {[50, 100, 200, 500, 1000].map(amt => (
+                  <button 
+                    key={amt}
+                    onClick={() => setDonationAmount(amt)}
+                    className={`btn-glass small ${donationAmount === amt ? 'active' : ''}`}
+                    style={{ background: donationAmount === amt ? 'var(--primary)' : 'rgba(255,255,255,0.1)', color: donationAmount === amt ? '#000' : '#fff' }}
+                  >
+                    ₹{amt}
+                  </button>
+                ))}
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ position: 'absolute', left: '10px', color: 'var(--text-secondary)' }}>₹</span>
+                  <input 
+                    type="number" 
+                    value={donationAmount} 
+                    onChange={(e) => setDonationAmount(Number(e.target.value))}
+                    className="glass-input small"
+                    style={{ width: '100px', paddingLeft: '25px', marginBottom: 0 }}
+                    placeholder="Custom"
+                  />
+                </div>
+              </div>
+              
+              <button className="btn-primary" onClick={handleMonetaryDonation}>Donate ₹{donationAmount} Now</button>
             </div>
           )}
         </section>

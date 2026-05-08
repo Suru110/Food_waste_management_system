@@ -1,6 +1,11 @@
 const getBackendUrl = () => {
   const hostname = window.location.hostname;
-  return `http://${hostname}:8000`;
+  // If we are running in dev mode (Vite default port 5173), target the backend on port 8000
+  if (window.location.port === '5173') {
+    return `http://${hostname}:8000`;
+  }
+  // In production/monolith, use the same origin
+  return window.location.origin;
 };
 
 export const API_BASE_URL = getBackendUrl();
