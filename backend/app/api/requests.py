@@ -23,6 +23,14 @@ async def create_request(
     donation = db.query(models.Donation).filter(models.Donation.id == request.donation_id).first()
     if not donation:
         raise HTTPException(status_code=404, detail="Donation not found")
+    
+    # Check for expiry even if background task hasn't updated status yet
+    import datetime
+    if donation.expiry_time <= datetime.datetime.now():
+        donation.status = models.DonationStatus.EXPIRED
+        db.commit()
+        raise HTTPException(status_code=400, detail="Food has expired and is no longer available")
+
     if donation.status != models.DonationStatus.AVAILABLE:
         raise HTTPException(status_code=400, detail="Food is no longer available")
     

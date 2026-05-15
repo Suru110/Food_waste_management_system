@@ -122,6 +122,15 @@ const PostDonation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate expiry time
+    const expiryDate = new Date(formData.expiry_time);
+    const now = new Date();
+    if (expiryDate <= now) {
+      alert("Expiry date and time must be in the future.");
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem('token');

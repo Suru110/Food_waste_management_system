@@ -40,11 +40,23 @@ def get_donations(
     status: Optional[models.DonationStatus] = None,
     db: Session = Depends(get_db)
 ):
+    import datetime
+    now = datetime.datetime.now()
+    
     query = db.query(models.Donation)
+    
+    # By default, only show items that haven't expired and are available
+    if not status:
+        query = query.filter(
+            models.Donation.status == models.DonationStatus.AVAILABLE,
+            models.Donation.expiry_time > now
+        )
+    else:
+        query = query.filter(models.Donation.status == status)
+        
     if food_type:
         query = query.filter(models.Donation.food_type.icontains(food_type))
-    if status:
-        query = query.filter(models.Donation.status == status)
+        
     return query.all()
 
 @router.get("/{donation_id}", response_model=schemas.DonationOut)

@@ -3,17 +3,55 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import asyncio
+import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
 from .api import auth, donations, requests, users, deliveries, translation, payments
-from .db.session import engine
-from .models import base
+from .db.session import engine, SessionLocal
+from .models import base as models
+from .core.sms import notify_expiry
 
 # Create database tables
-base.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Food Waste Management System", version="1.0.0")
+
+# Background task for expired donations
+async def check_expired_donations():
+    while True:
+        try:
+            db = SessionLocal()
+            now = datetime.datetime.now()
+            
+            # Find AVAILABLE donations that have expired
+            expired_donations = db.query(models.Donation).filter(
+                models.Donation.status == models.DonationStatus.AVAILABLE,
+                models.Donation.expiry_time <= now
+            ).all()
+            
+            for donation in expired_donations:
+                print(f"Processing expired donation: {donation.id} - {donation.food_type}")
+                donation.status = models.DonationStatus.EXPIRED
+                db.commit()
+                
+                # Notify the donor
+                if donation.donor and donation.donor.phone_number:
+                    # Run notification in background to not block the loop
+                    asyncio.create_task(notify_expiry(donation.donor.phone_number, donation.food_type))
+            
+            db.close()
+        except Exception as e:
+            print(f"Error in background task: {e}")
+        
+        # Wait for 60 seconds before next check
+        await asyncio.sleep(60)
+
+@app.on_event("startup")
+async def startup_event():
+    # Start the background task
+    asyncio.create_task(check_expired_donations())
 
 # CORS Configuration
 app.add_middleware(

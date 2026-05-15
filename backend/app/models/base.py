@@ -13,6 +13,7 @@ class DonationStatus(str, enum.Enum):
     AVAILABLE = "available"
     CLAIMED = "claimed"
     COMPLETED = "completed"
+    EXPIRED = "expired"
 
 class RequestStatus(str, enum.Enum):
     PENDING = "pending"

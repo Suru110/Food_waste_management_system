@@ -131,3 +131,10 @@ async def notify_pickup(phone: str, food_type: str):
         return
     msg = f"Your food ({food_type}) has been picked up by our volunteer and will reach you shortly."
     await send_sms([phone], msg)
+
+async def notify_expiry(phone: str, food_type: str):
+    """Notify the donor that their food has expired and sent to seva trusts."""
+    if not phone:
+        return
+    msg = f"Your food donation ({food_type}) has reached its expiry time and has been sent to nearby seva trusts. Thank you for your contribution! - Team FoodShare"
+    await send_sms([phone], msg)
