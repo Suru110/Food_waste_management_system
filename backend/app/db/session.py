@@ -21,14 +21,33 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-if settings.DB_HOST:
+if settings.DB_HOST and settings.DB_HOST.strip() and settings.DB_HOST.strip() not in ('""', "''"):
     from urllib.parse import quote_plus
-    encoded_password = quote_plus(settings.DB_PASSWORD)
-    SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.DB_USER}:{encoded_password}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+    db_host = settings.DB_HOST.strip().strip("'").strip('"')
+    db_user = settings.DB_USER.strip().strip("'").strip('"')
+    db_password = settings.DB_PASSWORD.strip().strip("'").strip('"')
+    db_port = str(settings.DB_PORT).strip().strip("'").strip('"')
+    db_name = settings.DB_NAME.strip().strip("'").strip('"')
+    
+    encoded_password = quote_plus(db_password)
+    SQLALCHEMY_DATABASE_URL = f"postgresql://{db_user}:{encoded_password}@{db_host}:{db_port}/{db_name}"
 else:
-    SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
-    if SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
-        SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    db_url = settings.DATABASE_URL
+    if db_url:
+        db_url = db_url.strip().strip("'").strip('"')
+        if db_url.startswith("DATABASE_URL="):
+            db_url = db_url.replace("DATABASE_URL=", "", 1).strip().strip("'").strip('"')
+        
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+            
+    SQLALCHEMY_DATABASE_URL = db_url or "sqlite:///./food_waste.db"
+
+# Debug print to help identify URL issues in Render logs (hide password for security)
+import re
+safe_url_for_logs = re.sub(r':(.*?)\@', ':***@', SQLALCHEMY_DATABASE_URL)
+print(f"Connecting to database with dialect prefix: {safe_url_for_logs.split('://')[0]}://")
+
 
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
