@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Common/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -10,6 +11,7 @@ import PostDonation from './pages/PostDonation';
 import DonationListings from './pages/DonationListings';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import MyClaims from './pages/MyClaims';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -26,10 +28,11 @@ const AdminRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="app">
-          <Navbar />
-          <Routes>
+      <ThemeProvider>
+        <Router>
+          <div className="app">
+            <Navbar />
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -39,6 +42,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/my-claims" 
+              element={
+                <PrivateRoute>
+                  <MyClaims />
                 </PrivateRoute>
               } 
             />
@@ -69,6 +80,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

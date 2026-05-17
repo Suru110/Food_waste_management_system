@@ -6,6 +6,7 @@ from ..models import base as models
 from ..schemas import request as schemas
 from .deps import get_current_user
 from ..core.sms import notify_volunteers_of_claim
+import random
 
 router = APIRouter()
 

@@ -269,7 +269,7 @@ const Dashboard = () => {
                 </div>
               )}
               {user.role === 'individual' && user.total_monetary_donated > 0 && (
-                <div className="donor-badge" style={{ padding: '0.3rem 0.8rem', background: 'linear-gradient(45deg, #00f291, #00d4ff)', border: 'none', color: '#000' }}>
+                <div className="donor-badge" style={{ padding: '0.3rem 0.8rem', background: 'linear-gradient(45deg, #00f291, #00d4ff)', border: 'none', color: 'var(--warning)' }}>
                    <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     {user.total_monetary_donated >= 25000 ? "❤️ Community Helper" : 
                      user.total_monetary_donated >= 10000 ? "💵 Giving Starter" : 
@@ -303,10 +303,10 @@ const Dashboard = () => {
           </div>
           {user.role === 'individual' && user.total_monetary_donated > 0 && (
             <div className="quick-stat">
-              <Heart size={20} style={{ color: '#00f291' }} />
+              <Heart size={20} style={{ color: 'var(--warning)' }} />
               <div className="stat-value">
-                <strong>₹{user.total_monetary_donated}</strong>
-                <span>Total Donated</span>
+                <strong style={{ color: 'var(--warning)' }}>₹{user.total_monetary_donated}</strong>
+                <span style={{ color: 'var(--warning)' }}>Total Donated</span>
               </div>
             </div>
           )}
@@ -317,116 +317,8 @@ const Dashboard = () => {
         <RiderDashboard />
       ) : (
         <section className="dashboard-grid">
-          <div className="active-section card">
-            <div className="section-title">
-              <Activity size={20} />
-              <h2>Your Claimed Food</h2>
-            </div>
-            
-            <motion.div 
-              className="request-feed"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: { transition: { staggerChildren: 0.1 } }
-              }}
-            >
-              {data.length === 0 ? (
-                <div className="empty-state">
-                  <AlertCircle size={48} />
-                  <p>{t('dashboard.noActivity')}</p>
-                </div>
-              ) : (
-                data.map(request => (
-                  <motion.div 
-                    key={request.id} 
-                    className="feed-item"
-                    variants={{
-                      hidden: { x: -20, opacity: 0 },
-                      visible: { x: 0, opacity: 1 }
-                    }}
-                    whileHover={{ scale: 1.02, x: 10 }}
-                  >
-                    <div className="item-main">
-                      <div className="item-icon">
-                        {request.status === 'accepted' ? <CheckCircle2 className="success" /> : 
-                         request.status === 'rejected' ? <XCircle className="danger" /> : 
-                         request.status === 'completed' ? <CheckCircle2 className="success" /> :
-                         <Clock className="warning" />}
-                      </div>
-                      <div className="item-details" style={{ width: '100%' }}>
-                        <h4 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>
-                          {request.donation?.food_type || `Food Request #${request.donation_id}`}
-                        </h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
-                          <div><strong>Donor:</strong> {request.donation?.donor?.name || 'Unknown'}</div>
-                          <div><strong>Quantity:</strong> {request.donation?.quantity || 'N/A'}</div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
-                            <span style={{ color: 'var(--success)' }}>🟢 From:</span>
-                            <span>{request.donation?.address || 'Donor Location'}</span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
-                            <span style={{ color: 'var(--danger)' }}>📍 To:</span>
-                            <span>{request.delivery_address || 'Your Location'}</span>
-                          </div>
-                        </div>
-                        <p className="message" style={{ fontStyle: 'italic', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>"{request.message || t('donations.noMessage')}"</p>
-                        <div className="item-meta" style={{ marginTop: '0.5rem' }}>
-                          <Calendar size={12} />
-                          <span>{new Date(request.created_at).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="item-actions">
-                      <span className={`status-pill ${request.status}`}>
-                        {request.status}
-                      </span>
-                      {user.role === 'individual' && request.status === 'accepted' && (
-                        <>
-                          <button 
-                            onClick={() => setTrackingRequest(request)}
-                            className="btn-primary small"
-                            style={{ marginLeft: '10px', background: 'var(--secondary)' }}
-                          >
-                            <Navigation size={14} /> Track
-                          </button>
-                          {request.delivery ? (
-                            request.delivery.status === 'picked_up' ? (
-                              <button 
-                                onClick={() => updateDeliveryStatus(request.delivery.id, 'delivered')}
-                                className="btn-primary small"
-                                style={{ marginLeft: '10px' }}
-                              >
-                                Mark as Delivered
-                              </button>
-                            ) : (
-                              <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                Delivery Status: {request.delivery.status}
-                              </span>
-                            )
-                          ) : (
-                            <button 
-                              onClick={() => updateRequestStatus(request.id, 'completed')}
-                              className="btn-primary small"
-                              style={{ marginLeft: '10px' }}
-                            >
-                              Mark as Received
-                            </button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
-          </div>
-
           {user.role === 'individual' && (
-            <div className="my-posts card">
+            <div className="my-posts card" style={{ gridColumn: 'span 2' }}>
               <div className="section-title">
                 <Package size={20} />
                 <h2>{t('dashboard.yourDonations')}</h2>
@@ -438,25 +330,26 @@ const Dashboard = () => {
                   myDonations.map(donation => (
                     <div key={donation.id} className="post-item">
                       <div className="post-info">
-                        {donation.image_url && (
+                        {donation.image_url ? (
                           <img src={donation.image_url} alt={donation.food_type} className="post-thumb" />
+                        ) : (
+                          <div className="post-thumb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)' }}>
+                            <Package size={48} style={{ color: 'var(--text-secondary)' }} />
+                          </div>
                         )}
                         <div className="post-text">
                           <strong>{donation.food_type}</strong>
-                          <span>{donation.quantity}</span>
+                          <span>Quantity: {donation.quantity}</span>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                         <span className={`status-tag ${donation.status}`}>
                           {donation.status}
                         </span>
                         {donorDeliveries.find(d => d.request?.donation_id === donation.id && d.status === 'accepted') && (
-                          <button 
-                            onClick={() => updateDeliveryStatus(donorDeliveries.find(d => d.request?.donation_id === donation.id).id, 'picked_up')}
-                            className="btn-primary small"
-                          >
-                            Mark Picked Up
-                          </button>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                            Waiting for rider to verify pickup...
+                          </span>
                         )}
                       </div>
                     </div>
@@ -478,25 +371,25 @@ const Dashboard = () => {
                     key={amt}
                     onClick={() => setDonationAmount(amt)}
                     className={`btn-glass small ${donationAmount === amt ? 'active' : ''}`}
-                    style={{ background: donationAmount === amt ? 'var(--primary)' : 'rgba(255,255,255,0.1)', color: donationAmount === amt ? '#000' : '#fff' }}
+                    style={{ background: donationAmount === amt ? 'var(--warning)' : 'rgba(255,255,255,0.1)', color: donationAmount === amt ? '#000' : 'var(--warning)' }}
                   >
                     ₹{amt}
                   </button>
                 ))}
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ position: 'absolute', left: '10px', color: 'var(--text-secondary)' }}>₹</span>
+                  <span style={{ position: 'absolute', left: '10px', color: 'var(--warning)' }}>₹</span>
                   <input 
                     type="number" 
                     value={donationAmount} 
                     onChange={(e) => setDonationAmount(Number(e.target.value))}
                     className="glass-input small"
-                    style={{ width: '100px', paddingLeft: '25px', marginBottom: 0 }}
+                    style={{ width: '100px', paddingLeft: '25px', marginBottom: 0, color: 'var(--warning)' }}
                     placeholder="Custom"
                   />
                 </div>
               </div>
               
-              <button className="btn-primary" onClick={handleMonetaryDonation}>Donate ₹{donationAmount} Now</button>
+              <button className="btn-primary" style={{ color: '#000', background: 'var(--warning)' }} onClick={handleMonetaryDonation}>Donate ₹{donationAmount} Now</button>
             </div>
           )}
         </section>
@@ -508,13 +401,13 @@ const Dashboard = () => {
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Navigation size={24} style={{ color: 'var(--primary)' }} />
-                <h2 style={{ color: '#fff' }}>Tracking Delivery #{trackingRequest.id}</h2>
+                <h2 style={{ color: 'var(--warning)' }}>Tracking Delivery #{trackingRequest.id}</h2>
               </div>
-              <button className="close-btn" onClick={() => setTrackingRequest(null)} style={{ color: '#fff' }}>&times;</button>
+              <button className="close-btn" onClick={() => setTrackingRequest(null)} style={{ color: 'var(--warning)' }}>&times;</button>
             </div>
             <div className="tracking-info-bar" style={{ background: 'rgba(var(--primary-rgb), 0.1)', border: '1px solid var(--primary)', padding: '1.2rem' }}>
-               <p style={{ color: '#fff' }}><strong>Volunteer:</strong> <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{trackingRequest.delivery?.rider?.name || "Assigning..."}</span></p>
-               <p style={{ color: '#fff' }}><strong>Status:</strong> <span style={{ color: 'var(--secondary)', fontWeight: 'bold' }}>{trackingRequest.delivery?.status || "Pending"}</span></p>
+               <p style={{ color: 'var(--warning)' }}><strong>Volunteer:</strong> <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{trackingRequest.delivery?.rider?.name || "Assigning..."}</span></p>
+               <p style={{ color: 'var(--warning)' }}><strong>Status:</strong> <span style={{ color: 'var(--secondary)', fontWeight: 'bold' }}>{trackingRequest.delivery?.status || "Pending"}</span></p>
             </div>
             <div className="map-container" style={{ height: '400px', borderRadius: '12px', overflow: 'hidden', marginTop: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
               <MapContainer 

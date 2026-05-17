@@ -11,6 +11,7 @@ class DeliveryCreate(DeliveryBase):
 
 class DeliveryUpdate(BaseModel):
     status: DeliveryStatus
+    otp: Optional[str] = None
 
 from .user import UserOut
 
@@ -19,6 +20,8 @@ class DeliveryOutBasic(DeliveryBase):
     request_id: int
     rider_id: Optional[int] = None
     status: DeliveryStatus
+    pickup_otp: Optional[str] = None
+    delivery_otp: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     rider: Optional[UserOut] = None

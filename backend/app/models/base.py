@@ -97,6 +97,8 @@ class Delivery(Base):
     request_id = Column(Integer, ForeignKey("requests.id"))
     rider_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     status = Column(SQLEnum(DeliveryStatus), default=DeliveryStatus.PENDING)
+    pickup_otp = Column(String, nullable=True)
+    delivery_otp = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

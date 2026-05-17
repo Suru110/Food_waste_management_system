@@ -35,9 +35,9 @@
 
 .nav-links a {
   text-decoration: none;
-  color: var(--text-secondary);
+  color: var(--warning);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   transition: var(--transition);
   display: flex;
   align-items: center;
@@ -57,7 +57,7 @@
   border: 1px solid var(--glass-border);
   padding: 0.5rem 1rem;
   border-radius: 12px;
-  color: white;
+  color: var(--warning);
   font-size: 0.85rem;
   display: flex;
   align-items: center;
@@ -117,6 +117,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000;
+  color: var(--warning);
   font-weight: 700;
 }

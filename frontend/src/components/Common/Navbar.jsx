@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Globe, LogOut, LayoutDashboard, Utensils, PlusCircle, ShieldCheck } from 'lucide-react';
+import { Globe, LogOut, LayoutDashboard, Utensils, PlusCircle, ShieldCheck, Sun, Moon, Monitor, ClipboardList } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { theme, cycleTheme } = useTheme();
   const [showLanguages, setShowLanguages] = useState(false);
 
   const languages = [
@@ -60,6 +62,10 @@ const Navbar = () => {
             )}
           </div>
 
+          <button className="theme-toggle-btn" onClick={cycleTheme} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: '0.5rem' }}>
+            {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <Monitor size={20} />}
+          </button>
+
           {user ? (
             <>
               <Link to="/dashboard">
@@ -73,10 +79,16 @@ const Navbar = () => {
                 </Link>
               )}
               {user.role === 'individual' && (
-                <Link to="/post-donation" className="btn-glass">
-                  <PlusCircle size={18} />
-                  {t('nav.donateFood')}
-                </Link>
+                <>
+                  <Link to="/post-donation">
+                    <PlusCircle size={18} />
+                    {t('nav.donateFood')}
+                  </Link>
+                  <Link to="/my-claims">
+                    <ClipboardList size={18} />
+                    My Claims
+                  </Link>
+                </>
               )}
               <button onClick={() => { logout(); navigate('/'); }} className="btn-logout">
                 <LogOut size={18} />
@@ -89,7 +101,7 @@ const Navbar = () => {
           ) : (
             <>
               <Link to="/login">{t('nav.login')}</Link>
-              <Link to="/register" className="btn-glass">{t('nav.register')}</Link>
+              <Link to="/register">{t('nav.register')}</Link>
             </>
           )}
         </div>

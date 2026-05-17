@@ -94,7 +94,7 @@
   margin-bottom: 2rem;
   font-weight: 900;
   letter-spacing: -2px;
-  color: #ffffff;
+  color: var(--warning);
 }
 
 .highlight-text {
@@ -121,7 +121,7 @@
 
 .btn-primary-glow {
   background: linear-gradient(135deg, #00f291 0%, #00c675 100%);
-  color: #000;
+  color: var(--warning);
   border: none;
   border-radius: 14px;
   padding: 1rem 2.5rem;
@@ -144,7 +144,7 @@
 
 .btn-outline-glass {
   background: rgba(255, 255, 255, 0.03);
-  color: #fff;
+  color: var(--warning);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 1rem 2.5rem;
@@ -227,7 +227,7 @@
 .stat-info h3 {
   font-size: 2.5rem;
   font-weight: 800;
-  color: white;
+  color: var(--warning);
   line-height: 1.1;
   margin-bottom: 0.3rem;
 }
@@ -245,6 +245,12 @@
   padding: 6rem 0 10rem 0;
 }
 
+.section-head.footer-bottom {
+  text-align: center;
+  color: var(--warning);
+  font-size: 0.9rem;
+}
+
 .section-header {
   text-align: center;
   margin-bottom: 5rem;
@@ -254,7 +260,7 @@
   font-size: 3.5rem;
   font-weight: 900;
   margin-bottom: 1rem;
-  background: linear-gradient(to right, #fff, #a0aec0);
+  background: linear-gradient(to right, var(--warning), #a0aec0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -1px;
@@ -324,7 +330,7 @@
 .modern-feature-card h3 {
   font-size: 1.8rem;
   font-weight: 800;
-  color: white;
+  color: var(--warning);
   margin-bottom: 1rem;
   position: relative;
   z-index: 1;

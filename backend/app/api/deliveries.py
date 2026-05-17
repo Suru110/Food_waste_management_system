@@ -6,7 +6,8 @@ from ..models import base as models
 from ..schemas import delivery as schemas
 from .deps import get_current_user
 import datetime
-from ..core.sms import notify_claim, notify_pickup, calculate_distance
+from ..core.sms import notify_claim, notify_pickup, calculate_distance, notify_donor_pickup_otp, notify_receiver_delivery_otp
+import random
 
 router = APIRouter()
 
@@ -87,6 +88,47 @@ async def accept_delivery(
 
     return delivery
 
+@router.post("/{delivery_id}/generate-pickup-otp")
+async def generate_pickup_otp(
+    delivery_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    delivery = db.query(models.Delivery).filter(models.Delivery.id == delivery_id).first()
+    if not delivery or delivery.rider_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    otp = str(random.randint(100000, 999999))
+    delivery.pickup_otp = otp
+    db.commit()
+    
+    request = delivery.request
+    donation = request.donation
+    if donation.donor and donation.donor.phone_number:
+        await notify_donor_pickup_otp(donation.donor.phone_number, donation.food_type, current_user.name, otp)
+    
+    return {"message": "Pickup OTP sent"}
+
+@router.post("/{delivery_id}/generate-delivery-otp")
+async def generate_delivery_otp(
+    delivery_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    delivery = db.query(models.Delivery).filter(models.Delivery.id == delivery_id).first()
+    if not delivery or delivery.rider_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    otp = str(random.randint(100000, 999999))
+    delivery.delivery_otp = otp
+    db.commit()
+    
+    request = delivery.request
+    if request.receiver and request.receiver.phone_number:
+        await notify_receiver_delivery_otp(request.receiver.phone_number, request.donation.food_type, current_user.name, otp)
+    
+    return {"message": "Delivery OTP sent"}
+
 @router.put("/{delivery_id}/status", response_model=schemas.DeliveryOut)
 async def update_delivery_status(
     delivery_id: int,
@@ -99,14 +141,16 @@ async def update_delivery_status(
         raise HTTPException(status_code=404, detail="Delivery not found")
         
     if delivery_update.status == models.DeliveryStatus.PICKED_UP:
-        donation = db.query(models.Donation).join(models.Request).filter(models.Request.id == delivery.request_id).first()
-        if not donation or (donation.donor_id != current_user.id and current_user.role != models.UserRole.ADMIN):
-            raise HTTPException(status_code=403, detail="Only the donor can mark this delivery as picked up")
+        if delivery.pickup_otp is not None:
+            if not delivery_update.otp or delivery_update.otp.strip() != delivery.pickup_otp:
+                raise HTTPException(status_code=400, detail="Invalid Pickup OTP")
+        # Removed role check, OTP acts as authorization
             
     elif delivery_update.status == models.DeliveryStatus.DELIVERED:
-        request = db.query(models.Request).filter(models.Request.id == delivery.request_id).first()
-        if not request or (request.receiver_id != current_user.id and current_user.role != models.UserRole.ADMIN):
-            raise HTTPException(status_code=403, detail="Only the receiver can mark this delivery as delivered")
+        if delivery.delivery_otp is not None:
+            if not delivery_update.otp or delivery_update.otp.strip() != delivery.delivery_otp:
+                raise HTTPException(status_code=400, detail="Invalid Delivery OTP")
+        # Removed role check, OTP acts as authorization
     
     # Simple state machine validation
     valid_transitions = {

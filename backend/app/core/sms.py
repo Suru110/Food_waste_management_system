@@ -125,6 +125,20 @@ async def notify_claim(phone: str, food_type: str, volunteer_name: str, delivery
     msg = f"Good news! Your request for {food_type} has been accepted by our volunteer {volunteer_name}. Estimated delivery time: {delivery_time}. They are on their way!"
     await send_sms([phone], msg)
 
+async def notify_receiver_delivery_otp(phone: str, food_type: str, volunteer_name: str, otp: str):
+    """Notify the receiver of the delivery OTP."""
+    if not phone:
+        return
+    msg = f"The volunteer {volunteer_name} has arrived with your {food_type}. Your Delivery OTP is {otp}. Please provide this to the volunteer."
+    await send_sms([phone], msg)
+
+async def notify_donor_pickup_otp(phone: str, food_type: str, volunteer_name: str, otp: str):
+    """Notify the donor of the pickup OTP."""
+    if not phone:
+        return
+    msg = f"Your donation ({food_type}) will be picked up by our volunteer {volunteer_name}. Your Pickup OTP is {otp}. Please provide this to the volunteer when they arrive."
+    await send_sms([phone], msg)
+
 async def notify_pickup(phone: str, food_type: str):
     """Notify the recipient that the food has been picked up."""
     if not phone:

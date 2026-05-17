@@ -42,6 +42,8 @@ const RiderDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [otpInputs, setOtpInputs] = useState({});
+  const [otpGenerated, setOtpGenerated] = useState({});
   const { refreshUser } = useAuth();
 
   const center = { lat: 12.9716, lng: 77.5946 };
@@ -124,16 +126,33 @@ const RiderDashboard = () => {
     }
   };
 
-  const handleUpdateStatus = async (deliveryId, newStatus) => {
+  const handleUpdateStatus = async (deliveryId, newStatus, otp = null) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${API_BASE_URL}/api/deliveries/${deliveryId}/status`, { status: newStatus }, {
+      await axios.put(`${API_BASE_URL}/api/deliveries/${deliveryId}/status`, { status: newStatus, otp }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
     } catch (err) {
-      alert('Failed to update status');
+      alert(err.response?.data?.detail || 'Failed to update status');
     }
+  };
+
+  const handleGenerateOtp = async (deliveryId, type) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${API_BASE_URL}/api/deliveries/${deliveryId}/generate-${type}-otp`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOtpGenerated({...otpGenerated, [`${deliveryId}-${type}`]: true});
+      alert('OTP Generated and sent via SMS!');
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to generate OTP');
+    }
+  };
+
+  const handleOtpChange = (deliveryId, value) => {
+    setOtpInputs({...otpInputs, [deliveryId]: value});
   };
 
   if (loading) return (
@@ -220,9 +239,17 @@ const RiderDashboard = () => {
                 <div className="item-main" style={{ alignItems: 'flex-start', width: '100%' }}>
                   <Navigation className="primary-icon" style={{ marginTop: '5px' }} />
                   <div className="item-details" style={{ width: '100%' }}>
-                    <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>
-                      {delivery.request?.donation?.food_type || `Delivery Job #${delivery.id}`}
-                    </h4>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>
+                        {delivery.request?.donation?.food_type || `Delivery Job #${delivery.id}`}
+                      </h4>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        {new Date(delivery.created_at || new Date()).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--warning)' }}>
+                      <strong>Donor:</strong> {delivery.request?.donation?.donor?.name || 'Unknown'}
+                    </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
                         <span style={{ color: 'var(--success)' }}>🟢 Pickup:</span>
@@ -265,9 +292,17 @@ const RiderDashboard = () => {
               <div key={delivery.id} className="feed-item" style={showHistory ? { opacity: 0.8 } : {}}>
                 <div className="item-main" style={{ alignItems: 'flex-start', width: '100%' }}>
                   <div className="item-details" style={{ width: '100%' }}>
-                    <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>
-                      {delivery.request?.donation?.food_type || `Delivery Job #${delivery.id}`}
-                    </h4>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>
+                        {delivery.request?.donation?.food_type || `Delivery Job #${delivery.id}`}
+                      </h4>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        {new Date(delivery.created_at || new Date()).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--warning)' }}>
+                      <strong>Donor:</strong> {delivery.request?.donation?.donor?.name || 'Unknown'}
+                    </p>
                     <p style={{ marginBottom: '0.5rem' }}>Current Status: <strong style={{ color: 'var(--primary)' }}>{delivery.status.toUpperCase()}</strong></p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
@@ -283,14 +318,62 @@ const RiderDashboard = () => {
                 </div>
                 <div className="action-btns">
                   {delivery.status === 'accepted' && (
-                    <p style={{ fontSize: '0.85rem', color: 'var(--warning)', marginTop: '0.5rem', fontStyle: 'italic' }}>
-                      Waiting for donor to confirm pickup...
-                    </p>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      {!otpGenerated[`${delivery.id}-pickup`] ? (
+                        <button 
+                          className="btn-primary small" 
+                          onClick={() => handleGenerateOtp(delivery.id, 'pickup')}
+                        >
+                          Generate Pickup OTP
+                        </button>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <input 
+                            type="text" 
+                            placeholder="Enter Pickup OTP" 
+                            className="glass-input small" 
+                            style={{ marginBottom: 0, width: '150px' }}
+                            value={otpInputs[delivery.id] || ''}
+                            onChange={(e) => handleOtpChange(delivery.id, e.target.value)}
+                          />
+                          <button 
+                            className="btn-primary small" 
+                            onClick={() => handleUpdateStatus(delivery.id, 'picked_up', otpInputs[delivery.id])}
+                          >
+                            Verify Pickup
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                   {delivery.status === 'picked_up' && (
-                    <p style={{ fontSize: '0.85rem', color: 'var(--success)', marginTop: '0.5rem', fontStyle: 'italic' }}>
-                      Waiting for receiver to confirm delivery...
-                    </p>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      {!otpGenerated[`${delivery.id}-delivery`] ? (
+                        <button 
+                          className="btn-primary small" 
+                          onClick={() => handleGenerateOtp(delivery.id, 'delivery')}
+                        >
+                          Generate Delivery OTP
+                        </button>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <input 
+                            type="text" 
+                            placeholder="Enter Delivery OTP" 
+                            className="glass-input small" 
+                            style={{ marginBottom: 0, width: '150px' }}
+                            value={otpInputs[delivery.id] || ''}
+                            onChange={(e) => handleOtpChange(delivery.id, e.target.value)}
+                          />
+                          <button 
+                            className="btn-primary small" 
+                            onClick={() => handleUpdateStatus(delivery.id, 'delivered', otpInputs[delivery.id])}
+                          >
+                            Verify Delivery
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

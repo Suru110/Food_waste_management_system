@@ -256,8 +256,8 @@ const DonationListings = () => {
       <div className="sidebar-list">
         <header className="listing-header">
           <div className="title-area">
-            <ListIcon size={24} />
-            <h1>{t('donations.available')}</h1>
+            <ListIcon size={28} className="primary-icon" style={{ color: 'var(--warning)' }} />
+            <h2 style={{ fontSize: '2rem', color: 'var(--warning)' }}>Available Food</h2>
           </div>
           <p>{filteredDonations.length} {t('donations.itemsFound')}</p>
           <div className="search-box">
@@ -400,10 +400,10 @@ const DonationListings = () => {
                     value={requestMessage}
                     onChange={(e) => setRequestMessage(e.target.value)}
                     className="glass-input"
-                    style={{ background: 'rgba(0,0,0,0.1)', color: 'black', marginBottom: '0.5rem' }}
+                    style={{ background: 'rgba(0,0,0,0.1)', color: 'var(--warning)', marginBottom: '0.5rem' }}
                   />
                   {distanceInfo[donation.id] && (
-                    <p style={{ fontSize: '0.85rem', color: 'black', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--warning)', marginBottom: '0.5rem', fontWeight: 'bold' }}>
                       Distance: {distanceInfo[donation.id].distance}
                     </p>
                   )}

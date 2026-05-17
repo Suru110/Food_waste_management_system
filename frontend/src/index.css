@@ -9,12 +9,23 @@
   --card-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.15);
   --text-primary: #f9fafb;
+  --text-primary-rgb: 249, 250, 251;
   --text-secondary: #a0aec0;
   --danger: #e74c3c;
   --success: #2ecc71;
   --warning: #f1c40f;
   --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   --glass-blur: blur(25px);
+}
+
+[data-theme="light"] {
+  --dark-bg: #f3f4f6;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --text-primary: #1f2937;
+  --text-primary-rgb: 31, 41, 55;
+  --text-secondary: #4b5563;
+  --primary-glow: rgba(0, 242, 145, 0.2);
 }
 
 @keyframes pulse-glow {
@@ -124,7 +135,7 @@ button,
 
 .btn-primary {
   background: var(--primary);
-  color: #000;
+  color: var(--warning);
   box-shadow: 0 0 0 0 var(--primary-glow);
   animation: pulse-glow 2.5s infinite;
 }
@@ -136,14 +147,14 @@ button,
 }
 
 .btn-glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--text-primary-rgb, 128, 128, 128), 0.05);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  color: white;
+  color: var(--text-primary);
 }
 
 .btn-glass:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--text-primary-rgb, 128, 128, 128), 0.1);
   border-color: var(--primary);
   transform: translateY(-4px);
 }
@@ -156,7 +167,7 @@ button,
 
 .btn-danger:hover {
   background: var(--danger);
-  color: white;
+  color: var(--warning);
   transform: translateY(-2px);
 }
 
@@ -178,11 +189,11 @@ button,
 }
 
 .glass-input {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(var(--text-primary-rgb, 0, 0, 0), 0.05);
   border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 1.1rem 1.4rem;
-  color: white;
+  color: var(--text-primary);
   width: 100%;
   transition: var(--transition);
   font-size: 1rem;
@@ -191,7 +202,7 @@ button,
 .glass-input:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(var(--text-primary-rgb, 0, 0, 0), 0.08);
   box-shadow: 0 0 0 1px var(--primary);
 }
 
